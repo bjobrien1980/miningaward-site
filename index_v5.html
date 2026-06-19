@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<!--
+  Copyright © 2026 Briefer Pty Ltd. All rights reserved.
+  Mining Industry Award 2020 — Entitlements Calculator v4
+  Award reference: MA000011 · Based on cl 15 & cl 18
+  Rates effective 1 July 2026 (PR799292, PR799449)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mining Industry Award 2020 — Entitlements Calculator</title>
+  <style>
+    :root {
+      --color-background-primary:   #ffffff;
+      --color-background-secondary: #f8fafc;
+      --color-background-tertiary:  #f1f5f9;
+      --color-text-primary:         #0f172a;
+      --color-text-secondary:       #64748b;
+      --color-border-tertiary:      #e2e8f0;
+      --color-border-secondary:     #cbd5e1;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--color-background-tertiary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+      color: var(--color-text-primary);
+    }
+
+    .w  { max-width: 660px; margin: 0 auto; }
+
+    /* ── header ── */
+    .hdr  { background: #1e3a5f; border-radius: var(--border-radius-lg); padding: 18px 22px 0; margin-bottom: 14px; }
+    .ey   { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #93c5fd; font-weight: 500; margin-bottom: 5px; }
+    .ht   { font-size: 26px; font-weight: 600; color: #f1f5f9; line-height: 1.1; margin-bottom: 3px; }
+    .hs0  { font-size: 11px; color: #bfdbfe; padding-bottom: 14px; }
+    .sp   { display: flex; gap: 18px; border-top: 1px solid #2d5a8e; padding: 10px 0; }
+    .pip  { display: flex; align-items: center; gap: 6px; font-size: 12px; background: none; border: none;
+            font-family: var(--font-sans); cursor: default; color: #93c5fd; }
+    .pip.a { color: #bfdbfe; }
+    .pip.d { color: #7ab3e0; cursor: pointer; }
+    .pc   { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 600; flex-shrink: 0; background: #2d5a8e; color: #93c5fd; }
+    .pip.a .pc { background: #1d4ed8; color: white; }
+    .pip.d .pc { background: #2563a8; color: #bfdbfe; }
+
+    /* ── cards ── */
+    .cd  { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary);
+           border-radius: var(--border-radius-lg); padding: 16px 18px; margin-bottom: 12px; }
+    .ch  { font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 3px; }
+    .cs  { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 12px; }
+
+    /* ── classification buttons ── */
+    .cb  { display: flex; align-items: center; justify-content: space-between; padding: 8px 11px;
+           border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);
+           background: var(--color-background-primary); cursor: pointer; width: 100%; text-align: left;
+           margin-bottom: 4px; font-family: var(--font-sans); }
+    .cb.s { border-color: #1d4ed8; background: #eff6ff; }
+    .cn   { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+    .csb  { font-size: 11px; color: var(--color-text-secondary); margin-left: 5px; }
+    .cr   { font-size: 11px; font-family: var(--font-mono); color: #94a3b8; flex-shrink: 0; margin-left: 10px; }
+    .cb.s .cr { color: #1d4ed8; }
+
+    /* ── toggle rows ── */
+    .tr  { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+           padding: 9px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .tr:last-child { border-bottom: none; }
+    .tl  { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+    .td  { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+    .tog { width: 38px; height: 21px; border-radius: 11px; border: none; cursor: pointer;
+           position: relative; flex-shrink: 0; margin-top: 2px; transition: background .2s; }
+    .tth { position: absolute; width: 15px; height: 15px; border-radius: 50%; background: white;
+           top: 3px; transition: left .2s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+
+    /* ── employment type buttons ── */
+    .empbg { display: flex; gap: 4px; flex-shrink: 0; }
+    .empb  { padding: 5px 11px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);
+             background: var(--color-background-primary); color: var(--color-text-secondary);
+             font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
+    .empb.s { border-color: #1d4ed8; background: #1d4ed8; color: white; }
+
+    /* ── template grid ── */
+    .tg  { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 12px; }
+    .tb  { padding: 7px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);
+           background: var(--color-background-primary); color: var(--color-text-secondary);
+           font-size: 11px; cursor: pointer; text-align: left; font-family: var(--font-sans); }
+    .tb.s { border-color: #1d4ed8; background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+
+    /* ── day of week grid ── */
+    .dg  { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 12px; }
+    .db  { padding: 6px 2px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);
+           background: var(--color-background-primary); color: var(--color-text-secondary);
+           font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
+    .db.s { border-color: #1d4ed8; background: #1d4ed8; color: white; }
+
+    /* ── length buttons ── */
+    .lb  { display: flex; gap: 6px; align-items: center; }
+    .lb button { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);
+                 background: var(--color-background-primary); color: var(--color-text-secondary);
+                 font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); }
+    .lb button.s { border-color: #1d4ed8; background: #1d4ed8; color: white; }
+    .lb input[type=number] { width: 62px; font-family: var(--font-mono); font-size: 11px; text-align: center;
+                              border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 5px; }
+
+    /* ── roster preview ── */
+    .pv  { background: var(--color-background-secondary); border-radius: var(--border-radius-lg);
+           padding: 12px; display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 10px; }
+    .ps  { display: flex; gap: 16px; flex-wrap: wrap; padding-top: 9px;
+           border-top: 0.5px solid var(--color-border-tertiary); margin-top: 9px; }
+    .pst label { font-size: 10px; color: var(--color-text-secondary); display: block; margin-bottom: 1px; }
+    .pst span  { font-size: 12px; font-weight: 600; color: var(--color-text-primary); font-family: var(--font-mono); }
+
+    /* ── nav buttons ── */
+    .nav { display: flex; gap: 8px; margin-top: 4px; }
+    .bp  { flex: 2; padding: 12px; border-radius: var(--border-radius-lg); font-size: 14px; font-weight: 600;
+           border: none; background: #1d4ed8; color: white; cursor: pointer; font-family: var(--font-sans); }
+    .bp:disabled { background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: default; }
+    .bs  { flex: 1; padding: 11px; border-radius: var(--border-radius-lg); font-size: 12px; font-weight: 600;
+           border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary);
+           color: var(--color-text-primary); cursor: pointer; font-family: var(--font-sans); }
+
+    /* ── hero block ── */
+    .hero  { background: #1e3a5f; border-radius: var(--border-radius-lg); padding: 22px 24px 20px; margin-bottom: 12px; }
+    .he    { font-size: 10px; color: #93c5fd; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; }
+    .hv    { font-size: 38px; font-weight: 600; color: #f1f5f9; font-family: var(--font-mono); letter-spacing: -1px; line-height: 1; }
+    .hd    { font-size: 11px; color: #bfdbfe; margin-top: 4px; }
+    .hst   { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid #2d5a8e; }
+    .hst label { font-size: 10px; color: #93c5fd; display: block; margin-bottom: 2px; }
+    .hst span  { font-size: 12px; font-weight: 600; color: #f1f5f9; font-family: var(--font-mono); }
+
+    /* ── optimised row ── */
+    .optrow  { margin-top: 14px; padding-top: 12px; border-top: 1px solid #2d5a8e; }
+    .optlbl  { font-size: 11px; color: #93c5fd; margin-bottom: 3px; }
+    .optval  { font-size: 22px; font-weight: 600; color: #bfdbfe; font-family: var(--font-mono); }
+    .optsub  { font-size: 10px; color: #7ab3e0; margin-top: 2px; line-height: 1.5; }
+
+    /* ── TFR ── */
+    .tfrrow    { margin-top: 14px; padding-top: 12px; border-top: 1px solid #2d5a8e; }
+    .tfrlbl    { font-size: 11px; color: #93c5fd; margin-bottom: 8px; }
+    .tfrfield  { display: flex; align-items: center; gap: 6px; }
+    .tfrsym    { font-size: 14px; color: #bfdbfe; }
+    .tfrinp    { background: #16305a; border: 1px solid #2d5a8e; border-radius: 6px; color: #f1f5f9;
+                 padding: 7px 10px; font-size: 14px; font-family: var(--font-mono); width: 160px; outline: none; }
+    .tfrinp:focus { border-color: #60a5fa; }
+    .tfrinp::placeholder { color: #4a7aaa; font-size: 12px; }
+    .tfrclr    { background: none; border: none; color: #7ab3e0; font-size: 11px; cursor: pointer;
+                 font-family: var(--font-sans); padding: 4px 6px; }
+    .tfrcomp   { margin-top: 12px; }
+    .tfrrow2   { display: flex; gap: 20px; flex-wrap: wrap; }
+    .tfritem label { font-size: 10px; color: #93c5fd; display: block; margin-bottom: 3px; }
+    .tfritem .pos  { font-size: 18px; font-weight: 600; font-family: var(--font-mono); color: #4ade80; }
+    .tfritem .neg  { font-size: 18px; font-weight: 600; font-family: var(--font-mono); color: #f87171; }
+    .tfritem .sub  { font-size: 10px; color: #7ab3e0; margin-top: 1px; }
+
+    /* ── outer limit ── */
+    .olsec  { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2d5a8e; }
+    .ollbl  { font-size: 10px; color: #93c5fd; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em; font-weight: 500; }
+    .olrow  { display: flex; gap: 20px; flex-wrap: wrap; }
+    .olitem label { font-size: 10px; color: #93c5fd; display: block; margin-bottom: 3px; }
+    .olitem .olv  { font-size: 18px; font-weight: 600; font-family: var(--font-mono); color: #4ade80; }
+    .olitem .sub  { font-size: 10px; color: #7ab3e0; margin-top: 1px; }
+    .olnote { font-size: 10px; color: #7ab3e0; margin-top: 8px; line-height: 1.5; }
+    .olwarn { font-size: 12px; color: #f87171; font-weight: 600; }
+    .olwarnsub { font-size: 11px; color: #93c5fd; margin-top: 4px; line-height: 1.5; }
+
+    /* ── rate build-up ── */
+    .rb  { background: var(--color-background-secondary); border-radius: var(--border-radius-md);
+           padding: 12px 14px; margin-bottom: 12px; }
+    .rbt { font-size: 11px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 8px; }
+    .rl  { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; font-size: 11px; }
+    .rl span   { color: var(--color-text-secondary); }
+    .rl strong { font-family: var(--font-mono); color: var(--color-text-primary); font-size: 11px; font-weight: 600; }
+    .rlt { border-top: 0.5px solid var(--color-border-tertiary); margin-top: 6px; padding-top: 6px; }
+    .rlt span   { font-weight: 600; color: var(--color-text-primary); }
+    .rlt strong { color: #1d4ed8; font-size: 12px; }
+
+    /* ── breakdown ── */
+    .bkr  { display: flex; justify-content: space-between; align-items: center;
+            padding: 9px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+    .bkr:last-child { border-bottom: none; }
+    .bkt  { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 3px; }
+    .bktl { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+    .bktv { font-size: 18px; font-weight: 600; color: #1d4ed8; font-family: var(--font-mono); }
+
+    /* ── day-by-day table ── */
+    .dtw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .dt  { border-collapse: collapse; font-size: 11px; min-width: 100%; }
+    .dt th { padding: 6px 10px; text-align: right; font-size: 9px; font-weight: 600; color: var(--color-text-secondary);
+             letter-spacing: .05em; text-transform: uppercase; border-bottom: 0.5px solid var(--color-border-tertiary);
+             background: var(--color-background-secondary); white-space: nowrap; }
+    .dt th.l  { text-align: left; }
+    .dt th.h  { background: #dbeafe; color: #1e40af; }
+    .dt th.m  { background: #ede9fe; color: #5b21b6; }
+    .dt th.o  { background: #fef2f2; color: #991b1b; }
+    .dt th.p  { background: #f0fdf4; color: #166534; }
+    .dt td    { padding: 6px 10px; border-bottom: 0.5px solid var(--color-border-tertiary);
+                color: var(--color-text-primary); text-align: right; white-space: nowrap; }
+    .dt td.l  { text-align: left; }
+    .dt .off td { color: var(--color-text-secondary); }
+    .dt .we   { background: #fffbeb; }
+    .wbd { font-size: 9px; font-weight: 600; background: #fef3c7; color: #92400e; padding: 1px 5px; border-radius: 3px; }
+    .dt .ft td { font-weight: 600; background: var(--color-background-secondary); border-top: 1px solid var(--color-border-secondary); }
+    .dt .ft .hvcol { color: #1d4ed8; font-family: var(--font-mono); }
+
+    /* ── roster tiles ── */
+    .tile { border-radius: 5px; display: inline-flex; flex-direction: column; align-items: center;
+            justify-content: center; flex-shrink: 0; gap: 1px; }
+
+    /* ── O'Neill card ── */
+    .ocard       { border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px; border: 0.5px solid; }
+    .ocard.pass  { background: #f0fdf4; border-color: #86efac; }
+    .ocard.fail  { background: #fef2f2; border-color: #fca5a5; }
+    .ocard.ovr   { background: var(--color-background-secondary); border-color: var(--color-border-tertiary); }
+    .oct         { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .oct.pass    { color: #166534; }
+    .oct.fail    { color: #991b1b; }
+    .oct.ovr     { color: var(--color-text-primary); }
+    .ocr         { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+    .ocri.ok     { color: #166534; }
+    .ocri.nk     { color: #991b1b; }
+    .ocl  { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 3px; }
+    .ocv  { font-size: 14px; font-weight: 600; font-family: var(--font-mono); }
+    .ocb  { font-size: 10px; color: var(--color-text-secondary); margin-top: 2px; }
+    .ocn  { font-size: 11px; color: var(--color-text-secondary); margin-top: 8px; padding-top: 8px;
+            border-top: 0.5px solid var(--color-border-tertiary); line-height: 1.5; }
+    .ovrow { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+             margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .ovrow span { font-size: 11px; color: var(--color-text-secondary); }
+
+    /* ── notes ── */
+    .nt  { background: #fffbeb; border: 0.5px solid #fde68a; border-radius: var(--border-radius-lg);
+           padding: 12px 16px; margin-top: 4px; }
+    .nth { font-size: 11px; font-weight: 600; color: #78350f; margin-bottom: 6px; }
+    .nt ul { font-size: 10px; color: #92400e; line-height: 1.7; padding-left: 14px; margin: 0; }
+
+    /* ── select inputs ── */
+    select { font-family: var(--font-sans); }
+
+    /* ── part-time inputs ── */
+    .ptinp { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px;
+             border-top: 0.5px solid var(--color-border-tertiary); }
+    .ptfield label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 5px; }
+    .ptfield input { width: 90px; font-family: var(--font-mono); font-size: 13px; text-align: center;
+                     border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 6px; }
+    .ptfield input:focus { outline: none; border-color: #1d4ed8; }
+
+    /* ── casual notice ── */
+    .casnote { margin-top: 10px; padding: 9px 12px; background: #fefce8; border: 0.5px solid #fde68a;
+               border-radius: var(--border-radius-md); font-size: 11px; color: #78350f; line-height: 1.5; }
+
+    /* ── on-costs card ── */
+    .ocnote { font-size: 10px; color: var(--color-text-secondary); margin-top: 10px; line-height: 1.6; }
+
+    /* ── print button ── */
+    .print-btn { display: flex; align-items: center; gap: 6px; }
+
+    /* ── print styles ── */
+    @media print {
+      body { background: white !important; padding: 8px; }
+      .hdr { background: #1e3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .hero { background: #1e3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .nav, .no-print { display: none !important; }
+      #s1, #s2 { display: none !important; }
+      #s3 { display: block !important; }
+      .cd, .rb, .nt, .ocard { break-inside: avoid; page-break-inside: avoid; }
+      .dtw { overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="w">
+  <div class="hdr">
+    <div class="ey">Mining Industry Award 2020 · MA000011</div>
+    <div class="ht">Award Entitlements Calculator</div>
+    <div class="hs0">Rates derived from Award cl 15 &amp; cl 18 · Full-time, part-time and casual employees · Effective 1 July 2026</div>
+    <div class="sp" id="sp"></div>
+  </div>
+  <div id="s1"></div>
+  <div id="s2" style="display:none"></div>
+  <div id="s3" style="display:none"></div>
+  <div class="no-print" style="margin-top:24px;font-size:10px;color:#64748b;text-align:center;line-height:1.8;">
+    For information purposes only. Not legal advice.<br>
+    Refer to the Mining Industry Award 2020 [MA000011] and the Fair Work Ombudsman for authoritative guidance.<br>
+    © 2026 Briefer Pty Ltd. All rights reserved.
+  </div>
+</div>
+
+<script>
+/* ── Award constants ─────────────────────────────────────────────────────── */
+/* Updated per FWC Determination PR799292 (Annual Wage Review 2026) and
+   PR799449 (Expense-related allowances 2026), both effective 1 July 2026.   */
+const A = {
+  ORD: 38,
+  CLS: [
+    { id:"entry", label:"Entry Level", sub:"Introductory — general duties",        wk:1004.90 },
+    { id:"l1",    label:"Level 1",     sub:"Basic skills and duties",              wk:1047.30 },
+    { id:"l2",    label:"Level 2",     sub:"Intermediate",                         wk:1086.20 },
+    { id:"l3",    label:"Level 3",     sub:"Competent trades or operators",       wk:1119.10 },
+    { id:"l4",    label:"Level 4",     sub:"Advanced / multi-skilled",             wk:1193.90 },
+    { id:"l5",    label:"Level 5",     sub:"Advanced specialist",                  wk:1271.80 },
+    { id:"l6",    label:"Level 6",     sub:"Dual trade",                           wk:1334.10 },
+    { id:"l7",    label:"Level 7",     sub:"Dual trade instrument technician",     wk:1388.10 },
+  ],
+  IND:  41.41,  // cl 18.2(b)(i) — industry allowance (all-purpose, weekly)
+  ELEC: 50.92,  // cl 18.2(c) — electrical licence allowance (all-purpose, weekly)
+  LH: { "3-10": 49.24, "11-20": 62.67, "20+": 84.27 },  // cl 18.2(f)
+  FA:   22.38,  // cl 18.2(e) — first aid allowance (weekly)
+  TOOL: 17.86,  // cl 18.3(b) — tool allowance (weekly) — unchanged in this determination
+  UG:    2.06,  // cl 18.2(h) — underground allowance (hourly)
+  OT1: 1.50,
+  OT2: 2.00,
+  OTC: 2.00,
+  AN:  1.15,
+  PN:  1.30,
+  S1:  1.50,     // cl 21.3 — Saturday ordinary hours, first 3 hrs
+  SU:  2.00,     // cl 21.3 — Saturday ordinary hours after 3 hrs / Sunday ordinary hours
+  PH:  2.50,
+  ALL: 0.175,
+  ALW: 4,
+  ALC: 5,
+  OS: 34,
+  OP:  6,
+  CAS: 1.25,   // cl 12.3 — casual loading
+};
+
+/* ── On-costs rates ──────────────────────────────────────────────────────── */
+const OC = { super: 0.12, ptax: 0.055, wcomp: 0.01 };
+
+const DOW   = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const SC    = { D:"#1d4ed8", N:"#4338ca", A:"#b45309", O:"#e2e8f0" };
+const TC    = { D:"white",   N:"white",   A:"white",   O:"#94a3b8"  };
+const SL    = { D:"Day",     N:"Night",   A:"Aft",     O:"Off"      };
+const SF    = { D:"Day shift", N:"Night shift", A:"Aft shift", O:"Off" };
+
+const TMPLS = [
+  { id:"8d6",    label:"8 on / 6 off",                      wk:2, p:[...Array(8).fill("D"),...Array(6).fill("O")] },
+  { id:"5d2",    label:"5 days / 2 off",                    wk:1, p:[...Array(5).fill("D"),...Array(2).fill("O")] },
+  { id:"14d7",   label:"14 on / 7 off",                     wk:3, p:[...Array(14).fill("D"),...Array(7).fill("O")] },
+  { id:"lfdn",   label:"Lifestyle days/nights — 4D/5X/5N/4X/5D/5X/4N/5X/5D/4X/5N/5X", wk:8, p:[...Array(4).fill("D"),...Array(5).fill("O"),...Array(5).fill("N"),...Array(4).fill("O"),...Array(5).fill("D"),...Array(5).fill("O"),...Array(4).fill("N"),...Array(5).fill("O"),...Array(5).fill("D"),...Array(4).fill("O"),...Array(5).fill("N"),...Array(5).fill("O")] },
+  { id:"7d7",    label:"7 days / 7 off",                    wk:2, p:[...Array(7).fill("D"),...Array(7).fill("O")] },
+  { id:"14d14",  label:"14 on / 14 off",                    wk:4, p:[...Array(14).fill("D"),...Array(14).fill("O")] },
+  { id:"lfd",    label:"Lifestyle days only — 4D/5X/5D/4X/5D/5X", wk:4, p:[...Array(4).fill("D"),...Array(5).fill("O"),...Array(5).fill("D"),...Array(4).fill("O"),...Array(5).fill("D"),...Array(5).fill("O")] },
+  { id:"8d6n7",  label:"8D / 6 off / 7N / 7 off",          wk:4, p:[...Array(8).fill("D"),...Array(6).fill("O"),...Array(7).fill("N"),...Array(7).fill("O")] },
+  { id:"7d7n14", label:"7D / 7N / 14 off",                  wk:4, p:[...Array(7).fill("D"),...Array(7).fill("N"),...Array(14).fill("O")] },
+  { id:"custom", label:"Custom roster…",                     wk:null, p:null },
+];
+
+/* ── Application state ───────────────────────────────────────────────────── */
+const st = {
+  step:1, cid:"l4", elec:false, lh:"none", fa:false, tl:false, ug:false, rail:false, pn:false,
+  tid:"8d6", sdow:0, sLen:12, cwk:2, cpat:null, contOvr:null, tfr:null,
+  wph:9,         // public holidays per year (user-editable; WA default = 9)
+  emp:"ft",      // "ft" = full-time, "pt" = part-time, "cas" = casual
+  ptHrs:null,    // ordinary hours per week when part-time
+  oncosts:false, // show employer on-costs
+};
+
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+const $a  = n => n.toLocaleString("en-AU", { style:"currency", currency:"AUD", minimumFractionDigits:0, maximumFractionDigits:0 });
+const f2  = n => parseFloat(n.toFixed(2));
+const f1  = n => parseFloat(n.toFixed(1));
+
+/* ── Domain functions ────────────────────────────────────────────────────── */
+function getDays() {
+  const tmpl = TMPLS.find(t => t.id === st.tid);
+  const pat  = st.tid === "custom" ? (st.cpat || Array(st.cwk * 7).fill("O")) : tmpl.p;
+  return (pat || []).map((s, i) => ({ s, dow: (st.sdow + i) % 7 }));
+}
+
+function assess(days, cpy) {
+  const suns   = days.filter(d => d.dow === 6 && d.s !== "O").length;
+  const sunsYr = suns * cpy;
+  const wkFr   = days.filter(d => d.s !== "O").length / days.length;
+  const phW    = st.wph * wkFr;
+  return { sunsYr, phW, auto: sunsYr >= A.OS && phW >= A.OP };
+}
+
+function computeRow(d, oh, oth, cmp, cont, pn) {
+  if (d.s === "O") return { ord100:0, ord115:0, ord130:0, ord150:0, ord200:0, ot150:0, ot200:0, pay:0 };
+  const sat = d.dow === 5, sun = d.dow === 6, nite = d.s === "N" || d.s === "A";
+  let ord100=0, ord115=0, ord130=0, ord150=0, ord200=0, ot150=0, ot200=0;
+  if (sat) {
+    ord150 = Math.min(3, oh);  ord200 = Math.max(0, oh - 3);
+    if (cont) { ot200 = oth; } else { ot150 = Math.min(3, oth); ot200 = Math.max(0, oth - 3); }
+  } else if (sun) {
+    ord200 = oh; ot200 = oth;
+  } else {
+    if (nite) { if (pn) ord130 = oh; else ord115 = oh; } else { ord100 = oh; }
+    if (cont) { ot200 = oth; } else { ot150 = Math.min(3, oth); ot200 = Math.max(0, oth - 3); }
+  }
+  const pay = ord100*cmp      + ord115*cmp*A.AN + ord130*cmp*A.PN
+            + ord150*cmp*A.S1 + ord200*cmp*A.SU
+            + ot150*cmp*A.OT1 + ot200*cmp*A.OT2;
+  return { ord100, ord115, ord130, ord150, ord200, ot150, ot200, pay };
+}
+
+function computeOptStot(days, cw, cmpEff, isCont, pn, ordHrsPerWk) {
+  const ordPool = ordHrsPerWk * cw;
+  const work    = days.map((d, i) => ({ ...d, idx: i })).filter(d => d.s !== "O");
+  const pri     = d => d.dow <= 4 ? (d.s === "N" || d.s === "A" ? 1 : 0) : 2;
+  const sorted  = [...work].sort((a, b) => pri(a) - pri(b));
+  let rem = ordPool;
+  const om = {};
+  sorted.forEach(d => {
+    const o = Math.min(st.sLen, rem);
+    om[d.idx] = { o, t: st.sLen - o };
+    rem = Math.max(0, rem - o);
+  });
+  let tot = 0;
+  days.forEach((d, i) => {
+    if (d.s === "O") return;
+    const { o, t } = om[i];
+    tot += computeRow(d, o, t, cmpEff, isCont, pn).pay;
+  });
+  return tot;
+}
+
+function compute() {
+  const cls  = A.CLS.find(c => c.id === st.cid);
+  const days = getDays();
+  const work = days.filter(d => d.s !== "O");
+  if (!work.length) return null;
+  if (st.emp === "pt" && (!st.ptHrs || st.ptHrs <= 0)) return null;
+
+  const cw  = days.length / 7;
+  const cpy = 52 / cw;
+  const ordHrsPerWk = st.emp === "pt" ? st.ptHrs : A.ORD;
+  const fte         = ordHrsPerWk / A.ORD;
+
+  const ordHr    = (cls.wk + A.IND) / A.ORD;
+  const elecAdd  = st.elec ? A.ELEC / A.ORD : 0;
+  const cmp      = ordHr + elecAdd;                   // base composite rate
+  const cmpEff   = cmp * (st.emp === "cas" ? A.CAS : 1); // with casual loading if applicable
+
+  const oh  = Math.min((ordHrsPerWk * cw) / work.length, st.sLen);
+  const oth = Math.max(0, st.sLen - oh);
+
+  const oa     = assess(days, cpy);
+  const isCont = st.contOvr !== null ? st.contOvr : oa.auto;
+  const pn     = st.pn && !isCont;
+
+  const rows = days.map((d, i) => ({ ...computeRow(d, oh, oth, cmpEff, isCont, pn), ...d, idx: i }));
+  let stot = 0; rows.forEach(r => stot += r.pay);
+
+  const nes = isCont ? A.ALC : A.ALW;
+
+  // Annual leave: greater-of test (cl 22.3) — not applicable to casual employees
+  let alP, alMethod;
+  if (st.emp === "cas") {
+    alP = 0; alMethod = "n/a";
+  } else {
+    const ordLeavePayAnn = nes * ordHrsPerWk * cmp;
+    // Ordinary-hours-only shift pay at base rate for nes weeks annually
+    let stotOrd = 0;
+    rows.forEach(r => {
+      stotOrd += (r.ord100 + r.ord115*A.AN + r.ord130*A.PN + r.ord150*A.S1 + r.ord200*A.SU) * cmp;
+    });
+    const workOrdPayAnn = (stotOrd / cw) * nes;
+    const penaltyComp   = Math.max(0, workOrdPayAnn - ordLeavePayAnn);
+    const loadingFlat   = ordLeavePayAnn * A.ALL;
+    const alLoading     = Math.max(loadingFlat, penaltyComp);
+    alMethod = penaltyComp > loadingFlat ? "penalty rates" : "17.5%";
+    alP = alLoading / cpy;
+  }
+
+  // Public holiday entitlement — casual employees have no entitlement for non-worked PHs
+  const phP = st.emp === "cas" ? 0 : (st.wph / cpy) * st.sLen * cmp * 1.5;
+
+  const lhW = A.LH[st.lh] || 0;
+  const railW = st.rail ? cls.wk * 0.30 : 0;
+  const alw = lhW*cw + (st.fa ? A.FA*cw : 0) + (st.tl ? A.TOOL*cw : 0) + (st.ug ? A.UG*work.length*st.sLen : 0) + railW*cw;
+
+  const tc  = stot + alP + phP + alw;
+  const ty  = tc * cpy;
+
+  const optStot = computeOptStot(days, cw, cmpEff, isCont, pn, ordHrsPerWk);
+  const optTc   = optStot + alP + phP + alw;
+  const optTy   = optTc * cpy;
+
+  const used = {
+    ord100: rows.some(r => r.ord100 > 0), ord115: rows.some(r => r.ord115 > 0),
+    ord130: rows.some(r => r.ord130 > 0), ord150: rows.some(r => r.ord150 > 0),
+    ord200: rows.some(r => r.ord200 > 0), ot150:  rows.some(r => r.ot150  > 0),
+    ot200:  rows.some(r => r.ot200  > 0),
+  };
+
+  return { cls, cmp, cmpEff, ordHr, elecAdd, oh, oth, cw, cpy, isCont, oa, nes,
+    nS: work.length, woh: (work.length * oh) / cw, ordHrsPerWk, fte, alMethod,
+    stot, alP, phP, alw, tc, ty, optTy, optTc, rows, used };
+}
+
+/* ── TFR comparison + outer limit updater ────────────────────────────────── */
+function updateTFRComp(el, R) {
+  const tfr = st.tfr;
+  if (!tfr || tfr <= 0) { el.innerHTML = ""; return; }
+  el.innerHTML = "";
+
+  const pf = base => {
+    const d = (tfr - base) / base * 100;
+    return { s: (d >= 0 ? "+" : "") + d.toFixed(1) + "%", ok: d >= 0, abs: Math.abs(d).toFixed(1) };
+  };
+  const vs = pf(R.ty), vo = pf(R.optTy);
+  const row = document.createElement("div"); row.className = "tfrrow2";
+  [{ label:"vs standard Award allocation", p:vs }, { label:"vs optimised Award allocation", p:vo }].forEach(x => {
+    const item = document.createElement("div"); item.className = "tfritem";
+    const lbl = document.createElement("label"); lbl.textContent = x.label;
+    const val = document.createElement("div");   val.className = x.p.ok ? "pos" : "neg"; val.textContent = x.p.s;
+    const sub = document.createElement("div");   sub.className = "sub";
+    sub.textContent = x.p.ok ? x.p.abs + "% above Award" : x.p.abs + "% below Award";
+    item.append(lbl, val, sub); row.appendChild(item);
+  });
+  el.appendChild(row);
+
+  // Outer limit — annualised wage arrangement (cl 17.2)
+  const surplus = tfr - R.ty;
+  const olSec = document.createElement("div"); olSec.className = "olsec";
+  const olLbl = document.createElement("div"); olLbl.className = "ollbl";
+  olLbl.textContent = "Annualised Wage Arrangement — Outer Limit (cl 17.2)";
+  olSec.appendChild(olLbl);
+
+  if (surplus >= 0) {
+    const rate150 = R.cmp * A.OT1;
+    const rate200 = R.cmp * A.OT2;
+    const hrs150  = surplus / rate150 / 52;
+    const hrs200  = surplus / rate200 / 52;
+    const olRow   = document.createElement("div"); olRow.className = "olrow";
+    [
+      { label:"TFR buffer above standard Award", val:$a(surplus),            sub:"per year" },
+      { label:"Outer limit at 150% OT",          val:hrs150.toFixed(1)+"h", sub:"per week · $"+rate150.toFixed(2)+"/hr · cl 20.1(a)" },
+      { label:"Outer limit at 200% OT",          val:hrs200.toFixed(1)+"h", sub:"per week · $"+rate200.toFixed(2)+"/hr · cl 20.1(b)" },
+    ].forEach(x => {
+      const item = document.createElement("div"); item.className = "olitem";
+      const lbl  = document.createElement("label"); lbl.textContent = x.label;
+      const val  = document.createElement("div");   val.className  = "olv";  val.textContent = x.val;
+      const sub  = document.createElement("div");   sub.className  = "sub";  sub.textContent = x.sub;
+      item.append(lbl, val, sub); olRow.appendChild(item);
+    });
+    olSec.appendChild(olRow);
+    const note = document.createElement("div"); note.className = "olnote";
+    note.textContent = "Additional hours that can be worked before the TFR no longer satisfies Award minimum pay. If actual hours in a reconciliation period generate Award entitlements exceeding your TFR, the employer must pay the shortfall (cl 17.2).";
+    olSec.appendChild(note);
+  } else {
+    const warn = document.createElement("div"); warn.className = "olwarn";
+    warn.textContent = "⚠ TFR is " + $a(Math.abs(surplus)) + " below the standard Award minimum.";
+    const warnSub = document.createElement("div"); warnSub.className = "olwarnsub";
+    warnSub.textContent = "An annualised wage arrangement at this rate would not satisfy the Award minimum (cl 17.2). The employer must make up the difference.";
+    olSec.append(warn, warnSub);
+  }
+  el.appendChild(olSec);
+}
+
+/* ── DOM helpers ─────────────────────────────────────────────────────────── */
+function mkEl(tag, props = {}) {
+  const el = document.createElement(tag);
+  Object.entries(props).forEach(([k, v]) => {
+    if (k === "style") { Object.assign(el.style, v); }
+    else if (k === "class") { el.className = v; }
+    else if (k === "text")  { el.textContent = v; }
+    else { el[k] = v; }
+  });
+  return el;
+}
+
+function mkTile(s, dow, sz, onClick) {
+  const d = mkEl("div", { class:"tile", style:{ width:sz+"px", height:sz+"px", background:SC[s], cursor: onClick ? "pointer" : "default" } });
+  d.append(
+    mkEl("span", { text:dow,   style:{ fontSize:"8px",  color:TC[s], lineHeight:"1" } }),
+    mkEl("span", { text:SL[s], style:{ fontSize:"8px",  color:TC[s], lineHeight:"1", fontWeight:"600" } })
+  );
+  if (onClick) d.onclick = onClick;
+  return d;
+}
+
+function mkTog(sk) {
+  const on = st[sk];
+  const b  = mkEl("button", { class:"tog", style:{ background: on ? "#1d4ed8" : "#94a3b8" } });
+  const t  = mkEl("span",   { class:"tth", style:{ left: on ? "20px" : "3px" } });
+  b.appendChild(t);
+  b.onclick = () => { st[sk] = !st[sk]; render(); };
+  return b;
+}
+
+function mkTogRow(lbl, desc, sk) {
+  const row = mkEl("div", { class:"tr" });
+  const L   = mkEl("div");
+  L.append(mkEl("div", { class:"tl", text:lbl }), mkEl("div", { class:"td", text:desc }));
+  row.append(L, mkTog(sk));
+  return row;
+}
+
+/* ── Step indicator ──────────────────────────────────────────────────────── */
+function renderPips() {
+  const el = document.getElementById("sp"); el.innerHTML = "";
+  [["Your Role",1],["Your Roster",2],["Entitlements",3]].forEach(([l, n]) => {
+    const b = mkEl("button", { class:"pip" + (st.step===n?" a": st.step>n?" d":"") });
+    const c = mkEl("span",   { class:"pc",  text: st.step>n && st.step!==n ? "✓" : n });
+    b.append(c, document.createTextNode(l));
+    if (st.step > n) b.onclick = () => { st.step = n; render(); };
+    el.appendChild(b);
+  });
+}
+
+/* ── O'Neill assessment card ─────────────────────────────────────────────── */
+function renderOneill(R, el) {
+  const { sunsYr, phW, auto } = R.oa;
+  const isCont = R.isCont, ovr = st.contOvr !== null;
+  const oc = mkEl("div", { class:"ocard " + (ovr ? "ovr" : isCont ? "pass" : "fail") });
+  const ti = mkEl("div", { class:"oct " + (ovr ? "ovr" : isCont ? "pass" : "fail"),
+    text: ovr
+      ? (st.contOvr ? "✓ Continuous shiftworker (manual override)" : "✗ Not continuous (manual override)")
+      : (isCont     ? "✓ Continuous shiftworker" : "✗ Not a continuous shiftworker") });
+  oc.appendChild(ti);
+  const cr = mkEl("div", { class:"ocr" });
+  [{ lbl:"Working Sundays / year",       val:sunsYr.toFixed(1), thr:"≥"+A.OS, ok:sunsYr>=A.OS },
+   { lbl:"Working PHs / year (est.)",    val:phW.toFixed(1),    thr:"≥"+A.OP, ok:phW>=A.OP    }].forEach(x => {
+    const it = mkEl("div", { class:"ocri " + (x.ok ? "ok" : "nk") });
+    it.append(
+      mkEl("div", { class:"ocl", text:x.lbl }),
+      mkEl("div", { class:"ocv", text:x.val }),
+      mkEl("div", { class:"ocb", text:"threshold: " + x.thr })
+    );
+    cr.appendChild(it);
+  });
+  oc.appendChild(cr);
+  oc.appendChild(mkEl("div", { class:"ocn",
+    text:"O'Neill v Roy Hill Holdings [2015] FWC 2461 — Commissioner Williams held that 'regularly works on Sundays and public holidays' requires ≥34 Sundays and ≥6 public holidays per year." }))
+  const or2 = mkEl("div", { class:"ovrow" });
+  const ot  = mkEl("button", { class:"tog", style:{ background: ovr ? "#1d4ed8" : "#94a3b8" } });
+  const oth = mkEl("span",   { class:"tth", style:{ left: ovr ? "20px" : "3px" } });
+  ot.appendChild(oth);
+  ot.onclick = () => { st.contOvr = ovr ? null : (auto ? false : true); render(); };
+  or2.append(mkEl("span", { text:"Manual override" }), ot);
+  oc.appendChild(or2);
+  if (ovr) {
+    const fb = mkEl("button", {
+      text: st.contOvr ? "Change to: not continuous" : "Change to: continuous",
+      style: { fontSize:"10px", background:"none", border:"none", cursor:"pointer",
+               color:"var(--color-text-secondary)", fontFamily:"var(--font-sans)",
+               textDecoration:"underline", padding:"4px 0", display:"block" }
+    });
+    fb.onclick = () => { st.contOvr = !st.contOvr; render(); };
+    oc.appendChild(fb);
+  }
+  el.appendChild(oc);
+}
+
+/* ── Step 1 — Role & allowances ──────────────────────────────────────────── */
+function renderS1() {
+  const el = document.getElementById("s1"); el.innerHTML = "";
+
+  // Classification card
+  const c1 = mkEl("div", { class:"cd" });
+  c1.append(mkEl("div", { class:"ch", text:"Award classification" }),
+            mkEl("div", { class:"cs", text:"Select the level that best matches your role. Check your contract or pay slip if unsure." }));
+  A.CLS.forEach(c => {
+    const b  = mkEl("button", { class:"cb" + (st.cid===c.id?" s":"") });
+    const L  = mkEl("span"); L.append(mkEl("span",{class:"cn",text:c.label}), mkEl("span",{class:"csb",text:"— "+c.sub}));
+    const rt = mkEl("span", { class:"cr", text:"$"+((c.wk+A.IND)/A.ORD).toFixed(2)+"/hr" });
+    b.append(L, rt); b.onclick = () => { st.cid = c.id; render(); }; c1.appendChild(b);
+  });
+  el.appendChild(c1);
+
+  // Allowances card
+  const c2 = mkEl("div", { class:"cd" });
+  c2.appendChild(mkEl("div", { class:"ch", text:"Allowances" }));
+
+  // Non-toggleable Industry Allowance info row (always included)
+  const indRow = mkEl("div", { class:"tr" });
+  const indL   = mkEl("div");
+  indL.append(
+    mkEl("div", { class:"tl", text:"Industry allowance" }),
+    mkEl("div", { class:"td", text:"Included in all calculations as an all-purpose allowance ($41.41/week)" })
+  );
+  const indBadge = mkEl("span", { text:"Always included",
+    style:{ fontSize:"10px", fontWeight:"600", color:"#166534", background:"#f0fdf4",
+            padding:"3px 8px", borderRadius:"4px", borderWidth:"0.5px", borderStyle:"solid", borderColor:"#86efac", flexShrink:"0" } });
+  indRow.append(indL, indBadge);
+  c2.appendChild(indRow);
+
+  [{ v:"elec", l:"Electrical licence allowance",   d:"Employer requires you to hold an Electrical Technicians licence — all-purpose, $50.92/week (cl 18.2)" },
+   { v:"fa",   l:"First aid allowance",             d:"Appointed by employer to perform first aid duty — $22.38/week (cl 18.4)" },
+   { v:"tl",   l:"Tool allowance",                  d:"Required to supply and maintain your own trade tools — $17.86/week (cl 18.5)" },
+   { v:"ug",   l:"Underground allowance",           d:"Required to work underground — does not apply to employees classified as underground miners — $2.06/hour (cl 18.6)" },
+   { v:"rail", l:"Rail allowance",   d:"For mainline competent locomotive drivers - 30% of the minimum rate of pay" },
+  ].forEach(x => c2.appendChild(mkTogRow(x.l, x.d, x.v)));
+
+  const lhRow = mkEl("div", { class:"tr" });
+  const lhL   = mkEl("div");
+  lhL.append(mkEl("div",{class:"tl",text:"Leading hand allowance"}), mkEl("div",{class:"td",text:"Responsible for supervising other employees (cl 18.3)"}));
+  const sel = mkEl("select", { style:{ border:"0.5px solid var(--color-border-tertiary)", borderRadius:"var(--border-radius-md)",
+    padding:"5px 7px", fontSize:"11px", background:"var(--color-background-primary)", color:"var(--color-text-primary)" } });
+  [["none","Not a leading hand"],["3-10","3–10 employees ($49.24/wk)"],["11-20","11–20 employees ($62.67/wk)"],["20+","20+ employees ($84.27/wk)"]].forEach(([v,t]) => {
+    const o = mkEl("option"); o.value = v; o.textContent = t; if (st.lh === v) o.selected = true; sel.appendChild(o);
+  });
+  sel.onchange = e => { st.lh = e.target.value; render(); };
+  lhRow.append(lhL, sel); c2.appendChild(lhRow);
+  c2.appendChild(mkTogRow("Permanent night shift", "Where an employee works night shift only; or remains on night shift for longer than 4 consecutive weeks; or works on rotation between days/nights where >1/3 of working time is spent working night shifts - 130% of ordinary rate of pay", "pn"));
+  el.appendChild(c2);
+
+  // Employment details card
+  const c3 = mkEl("div", { class:"cd" });
+  c3.append(mkEl("div",{class:"ch",text:"Employment details"}),
+            mkEl("div",{class:"cs",text:"Configure employment type and public holiday calendar."}));
+
+  // Employment type — 3-way selector
+  const empRow = mkEl("div", { class:"tr" });
+  const empL   = mkEl("div");
+  empL.append(mkEl("div",{class:"tl",text:"Employment type"}));
+  const empBg = mkEl("div", { class:"empbg" });
+  [["ft","Full-time"],["pt","Part-time"],["cas","Casual"]].forEach(([v, lbl]) => {
+    const b = mkEl("button", { class:"empb" + (st.emp===v?" s":""), text:lbl });
+    b.onclick = () => { st.emp = v; if (v !== "pt") st.ptHrs = null; render(); };
+    empBg.appendChild(b);
+  });
+  empRow.append(empL, empBg);
+  c3.appendChild(empRow);
+
+  // Part-time hours/FTE inputs
+  if (st.emp === "pt") {
+    const ptDiv  = mkEl("div", { class:"ptinp" });
+    const hField = mkEl("div", { class:"ptfield" });
+    const hLbl   = mkEl("label"); hLbl.textContent = "Ordinary hours / week";
+    const hInp   = mkEl("input");
+    hInp.type="number"; hInp.min=0.5; hInp.max=37.5; hInp.step=0.5;
+    hInp.placeholder="e.g. 19.0"; if (st.ptHrs) hInp.value = st.ptHrs;
+    const fField = mkEl("div", { class:"ptfield" });
+    const fLbl   = mkEl("label"); fLbl.textContent = "FTE  (÷ 38)";
+    const fInp   = mkEl("input");
+    fInp.type="number"; fInp.min=0.01; fInp.max=0.99; fInp.step=0.01;
+    fInp.placeholder="e.g. 0.50"; if (st.ptHrs) fInp.value = (st.ptHrs / 38).toFixed(2);
+    hInp.oninput = e => {
+      const v = parseFloat(e.target.value);
+      if (v > 0 && v <= 37.5) { st.ptHrs = v; fInp.value = (v / 38).toFixed(2); }
+      else if (!e.target.value) { st.ptHrs = null; fInp.value = ""; }
+    };
+    fInp.oninput = e => {
+      const v = parseFloat(e.target.value);
+      if (v > 0 && v < 1) {
+        st.ptHrs = Math.round(v * 38 * 2) / 2;
+        hInp.value = st.ptHrs;
+      } else if (!e.target.value) { st.ptHrs = null; hInp.value = ""; }
+    };
+    hField.append(hLbl, hInp);
+    fField.append(fLbl, fInp);
+    ptDiv.append(hField, fField);
+    c3.appendChild(ptDiv);
+  }
+
+  // Casual notice
+  if (st.emp === "cas") {
+    const cn = mkEl("div", { class:"casnote" });
+    cn.textContent = "25% casual loading applied to all rates (cl 12.3). Casual employees do not accrue annual leave or receive payment for public holidays on non-worked days — the casual loading is intended to compensate for these.";
+    c3.appendChild(cn);
+  }
+
+  // Public holidays per year
+  const wphRow = mkEl("div", { class:"tr" });
+  const wphL   = mkEl("div");
+  wphL.append(mkEl("div",{class:"tl",text:"Public holidays per year"}),
+              mkEl("div",{class:"td",text:"Adjust to match the location where work is performed."}));
+  const wphInp = mkEl("input");
+  wphInp.type="number"; wphInp.min=0; wphInp.max=20; wphInp.step=1; wphInp.value=st.wph;
+  wphInp.style.cssText = "width:52px;font-family:var(--font-mono);font-size:12px;text-align:center;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px;";
+  wphInp.onchange = e => { const v = parseInt(e.target.value); if (v >= 0 && v <= 20) { st.wph = v; render(); } };
+  wphRow.append(wphL, wphInp);
+  c3.appendChild(wphRow);
+  el.appendChild(c3);
+
+  const nav = mkEl("div", { class:"nav" });
+  const nx  = mkEl("button", { class:"bp", text:"Next: enter your roster →" });
+  nx.onclick = () => { st.step = 2; render(); };
+  nav.appendChild(nx); el.appendChild(nav);
+}
+
+/* ── Step 2 — Roster ─────────────────────────────────────────────────────── */
+function renderS2() {
+  const el = document.getElementById("s2"); el.innerHTML = "";
+  const R  = compute();
+
+  const c1 = mkEl("div", { class:"cd" });
+  c1.append(mkEl("div",{class:"ch",text:"Select your roster"}), mkEl("div",{class:"cs",text:"Choose the pattern that matches how you work on site."}));
+  const tg = mkEl("div", { class:"tg" });
+  TMPLS.forEach(t => {
+    const b = mkEl("button", { class:"tb" + (st.tid===t.id?" s":""), text:t.label });
+    b.onclick = () => { st.tid = t.id; if (t.id !== "custom") st.cpat = null; render(); };
+    tg.appendChild(b);
+  });
+  c1.appendChild(tg);
+
+  if (st.tid === "custom") {
+    const div = mkEl("div", { style:{ paddingTop:"10px", borderTop:"0.5px solid var(--color-border-tertiary)" } });
+    const row = mkEl("div", { style:{ display:"flex", alignItems:"center", gap:"14px", marginBottom:"10px", flexWrap:"wrap" } });
+    const cws = mkEl("select", { style:{ border:"0.5px solid var(--color-border-tertiary)", borderRadius:"var(--border-radius-md)",
+      padding:"4px 7px", fontSize:"11px", background:"var(--color-background-primary)", color:"var(--color-text-primary)" } });
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16].forEach(w => { const o=mkEl("option"); o.value=w; o.textContent=w+" week"+(w>1?"s":""); if(st.cwk===w)o.selected=true; cws.appendChild(o); });
+    cws.onchange = e => { st.cwk = +e.target.value; st.cpat = Array(st.cwk*7).fill("O"); render(); };
+    row.append(mkEl("div",{text:"Cycle:",style:{fontSize:"11px",color:"var(--color-text-secondary)"}}), cws,
+               mkEl("div",{text:"Tap: Off → Day → Night → Aft",style:{fontSize:"10px",color:"var(--color-text-secondary)"}}));
+    const grid = mkEl("div",{ style:{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:"3px" } });
+    const pat  = st.cpat || Array(st.cwk*7).fill("O");
+    const order = ["O","D","N","A"];
+    pat.forEach((s2, i) => {
+      grid.appendChild(mkTile(s2, DOW[(st.sdow+i)%7], 40, () => {
+        const p = st.cpat || Array(st.cwk*7).fill("O");
+        const u = [...p]; u[i] = order[(order.indexOf(u[i])+1)%order.length]; st.cpat = u; render();
+      }));
+    });
+    div.append(row, grid); c1.appendChild(div);
+  }
+  el.appendChild(c1);
+
+  const c2 = mkEl("div", { class:"cd" });
+  c2.appendChild(mkEl("div",{class:"ch",text:"Roster details",style:{marginBottom:"12px"}}));
+  c2.appendChild(mkEl("div",{text:"First day of cycle",style:{fontSize:"11px",color:"var(--color-text-secondary)",marginBottom:"6px"}}));
+  const dg = mkEl("div", { class:"dg" });
+  DOW.forEach((d, i) => {
+    const b = mkEl("button", { class:"db" + (st.sdow===i?" s":""), text:d });
+    b.onclick = () => { st.sdow = i; render(); }; dg.appendChild(b);
+  });
+  c2.appendChild(dg);
+  c2.appendChild(mkEl("div",{text:"Shift length (hours)",style:{fontSize:"11px",color:"var(--color-text-secondary)",marginBottom:"6px",marginTop:"10px"}}));
+  const lb = mkEl("div", { class:"lb" });
+  [8,10,12].forEach(n => {
+    const b = mkEl("button", { class: st.sLen===n?"s":"", text:n+"hr" });
+    b.onclick = () => { st.sLen = n; render(); }; lb.appendChild(b);
+  });
+  const li = mkEl("input");
+  li.type="number"; li.value=st.sLen; li.min=4; li.max=24; li.step=0.5;
+  li.style.cssText = "width:62px;font-family:var(--font-mono);font-size:11px;text-align:center;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px;";
+  li.onchange = e => { st.sLen = Math.max(4, Math.min(24, Math.round(+e.target.value * 2) / 2)); render(); };
+  lb.appendChild(li); c2.appendChild(lb); el.appendChild(c2);
+
+  if (R) {
+    const days = getDays();
+    const pv   = mkEl("div", { class:"pv" });
+    days.forEach(d => pv.appendChild(mkTile(d.s, DOW[d.dow], 34)));
+    const ps = mkEl("div", { class:"ps" });
+    [["Working shifts",R.nS],["Cycle",f1(R.cw)+" wks"],["Ord hrs/shift",f2(R.oh)+"h"],["OT hrs/shift",f2(R.oth)+"h"],["Avg ord hrs/wk",f2(R.woh)+"h"]].forEach(([l,v]) => {
+      const p = mkEl("div", { class:"pst" });
+      p.append(mkEl("label",{text:l}), mkEl("span",{text:v})); ps.appendChild(p);
+    });
+    pv.appendChild(ps); el.appendChild(pv);
+    renderOneill(R, el);
+  }
+
+  const nav = mkEl("div", { class:"nav" });
+  const bk  = mkEl("button", { class:"bs", text:"← Back" }); bk.onclick = () => { st.step = 1; render(); };
+  const nx  = mkEl("button", { class:"bp", text:"Calculate entitlements →" }); nx.disabled = !R;
+  nx.onclick = () => { st.step = 3; render(); };
+  nav.append(bk, nx); el.appendChild(nav);
+}
+
+/* ── Step 3 — Results ────────────────────────────────────────────────────── */
+function renderS3() {
+  const el = document.getElementById("s3"); el.innerHTML = "";
+  const R  = compute(); if (!R) return;
+
+  const empLabel = st.emp === "cas" ? " · Casual (25% loading)"
+                 : st.emp === "pt"  ? " · " + f2(R.ordHrsPerWk) + "h/wk (" + f2(R.fte) + " FTE)"
+                 : "";
+  const rateLabel = st.emp === "cas"
+    ? "$"+f2(R.cmp)+"/hr base + 25% casual = $"+f2(R.cmpEff)+"/hr"
+    : "$"+f2(R.cmpEff)+"/hr";
+
+  /* hero */
+  const hero = mkEl("div", { class:"hero" });
+  hero.append(
+    mkEl("div", { class:"he",  text:"Estimated Annual Award Entitlement · standard (equal hours) allocation" }),
+    mkEl("div", { class:"hv",  text:$a(R.ty) }),
+    mkEl("div", { class:"hd",  text:R.cls.label+" · "+R.nS+" shifts / "+f1(R.cw)+"-week cycle · "+f1(R.cpy)+" cycles/yr · "+(R.isCont?"Continuous":"Non-continuous")+" shiftworker"+empLabel })
+  );
+  const hst = mkEl("div", { class:"hst" });
+  const heroStats = [
+    ["Per cycle",     $a(R.tc)],
+    ["Ordinary rate", rateLabel],
+    ["Ord hrs/shift", f2(R.oh)+"h"],
+    ["OT hrs/shift",  f2(R.oth)+"h"],
+    ["Annual leave",  R.nes+" weeks"],
+  ];
+  if (st.emp === "pt") heroStats.push(["Ord hrs/wk", f2(R.ordHrsPerWk)+"h"], ["FTE", f2(R.fte)]);
+  if (st.emp === "cas") heroStats.push(["Leave", "n/a (casual)"]);
+  heroStats.forEach(([l,v]) => {
+    const d = mkEl("div"); d.append(mkEl("label",{text:l}), mkEl("span",{text:v})); hst.appendChild(d);
+  });
+  hero.appendChild(hst);
+
+  /* optimised */
+  const saving    = R.ty - R.optTy;
+  const savingPct = (saving / R.ty * 100).toFixed(1);
+  const optRow = mkEl("div", { class:"optrow" });
+  optRow.append(
+    mkEl("div", { class:"optlbl", text:"Optimised roster approach  (employer-minimum allocation)" }),
+    mkEl("div", { class:"optval", text:$a(R.optTy) }),
+    mkEl("div", { class:"optsub", text:"Ordinary hours assigned to weekday shifts first; OT to weekend shifts. Standard allocation is "+savingPct+"% higher than this minimum." })
+  );
+  hero.appendChild(optRow);
+
+  /* TFR */
+  const tfrRow   = mkEl("div", { class:"tfrrow" });
+  const tfrField = mkEl("div", { class:"tfrfield" });
+  const tfrInp   = mkEl("input");
+  tfrInp.type="number"; tfrInp.className="tfrinp"; tfrInp.placeholder="Annual TFR, e.g. 130000"; tfrInp.min=0;
+  if (st.tfr) tfrInp.value = st.tfr;
+  const tfrClr  = mkEl("button", { class:"tfrclr", text:"Clear" });
+  const tfrComp = mkEl("div",    { class:"tfrcomp" });
+  tfrInp.oninput = e => { const v=parseFloat(e.target.value); st.tfr=(v>0?v:null); updateTFRComp(tfrComp,R); };
+  tfrClr.onclick = () => { st.tfr=null; tfrInp.value=""; tfrComp.innerHTML=""; };
+  tfrField.append(mkEl("span",{class:"tfrsym",text:"$"}), tfrInp, tfrClr);
+  tfrRow.append(mkEl("div",{class:"tfrlbl",text:"Compare with your Total Fixed Remuneration (optional)"}), tfrField, tfrComp);
+  updateTFRComp(tfrComp, R);
+  hero.appendChild(tfrRow);
+  el.appendChild(hero);
+
+  /* on-costs card */
+  const ocCard = mkEl("div", { class:"cd" });
+  const ocHdr  = mkEl("div", { class:"tr" });
+  const ocL    = mkEl("div");
+  ocL.append(mkEl("div",{class:"tl",text:"Employer on-costs"}),
+             mkEl("div",{class:"td",text:"Superannuation, payroll tax and workers' compensation."}));
+  const ocTog = mkEl("button", { class:"tog", style:{ background: st.oncosts ? "#1d4ed8" : "#94a3b8" } });
+  const ocTh  = mkEl("span",   { class:"tth", style:{ left: st.oncosts ? "20px" : "3px" } });
+  ocTog.appendChild(ocTh);
+  ocTog.onclick = () => { st.oncosts = !st.oncosts; render(); };
+  ocHdr.append(ocL, ocTog);
+  ocCard.appendChild(ocHdr);
+
+  if (st.oncosts) {
+    // Superannuation applies to ordinary time earnings only (SGAA s 6 — not overtime, not most allowances)
+    // Ordinary time earnings = ordinary shift pay at base rate (no OT component)
+    let oteAnn = 0;
+    R.rows.forEach(r => {
+      oteAnn += (r.ord100 + r.ord115*A.AN + r.ord130*A.PN + r.ord150*A.S1 + r.ord200*A.SU) * R.cmpEff;
+    });
+    oteAnn = (oteAnn / R.cw) * 52; // annualise from per-cycle
+    // Add all-purpose allowances to OTE (they attract super)
+    oteAnn += R.alw * R.cpy;
+    const superAmt  = oteAnn * OC.super;
+    const ptaxAmt   = R.ty * OC.ptax;
+    const wcompAmt  = R.ty * OC.wcomp;
+    const totalCost = R.ty + superAmt + ptaxAmt + wcompAmt;
+    const bd = mkEl("div", { style:{ marginTop:"12px", paddingTop:"12px", borderTop:"0.5px solid var(--color-border-tertiary)" } });
+    [
+      ["Award minimum entitlement",         R.ty,      false],
+      ["+ Superannuation (12% on OTE)",     superAmt,  false],
+      ["+ Payroll tax (5.5%)",              ptaxAmt,   false],
+      ["+ Workers' compensation (1%)",      wcompAmt,  false],
+    ].forEach(([l, v]) => {
+      const row = mkEl("div", { class:"bkr" });
+      const lb  = mkEl("div"); lb.style.cssText = "font-size:12px;color:var(--color-text-secondary);"; lb.textContent = l;
+      const vl  = mkEl("div"); vl.style.cssText = "font-size:12px;font-weight:600;font-family:var(--font-mono);color:var(--color-text-primary);flex-shrink:0;margin-left:12px;"; vl.textContent = $a(v);
+      row.append(lb, vl); bd.appendChild(row);
+    });
+    const totRow = mkEl("div", { class:"bkt" });
+    totRow.innerHTML = `<span class="bktl">Total employment cost</span><span class="bktv">${$a(totalCost)}</span>`;
+    bd.appendChild(totRow);
+    const ocNote = mkEl("div", { class:"ocnote" });
+    ocNote.textContent = "Superannuation calculated on ordinary time earnings (OTE) — shift pay excluding overtime, consistent with SGAA s 6. OTE includes all-purpose allowances. Payroll tax and workers' comp rates are indicative; actual rates vary by state and payroll threshold.";
+    bd.appendChild(ocNote);
+    ocCard.appendChild(bd);
+  }
+  el.appendChild(ocCard);
+
+  /* rate build-up */
+  const rb = mkEl("div", { class:"rb" });
+  const casLine = st.emp === "cas"
+    ? `<div class="rl"><span>Casual loading — cl 12.3 (25%)</span><strong>× 1.25 = $${R.cmpEff.toFixed(4)}/hr</strong></div>`
+    : "";
+  rb.innerHTML = `<div class="rbt">Rate build-up — Mining Industry Award 2020</div>
+<div class="rl"><span>Award minimum weekly wage — cl 15 (${R.cls.label})</span><strong>$${R.cls.wk.toFixed(2)}/week</strong></div>
+<div class="rl"><span>Industry allowance — cl 18.2(b)(i) (all-purpose)</span><strong>+ $${A.IND.toFixed(2)}/week</strong></div>
+<div class="rl"><span>Total ordinary weekly earnings ÷ ${A.ORD} hours</span><strong>= $${R.ordHr.toFixed(4)}/hr</strong></div>`
++ (R.elecAdd > 0 ? `<div class="rl"><span>Electrical licence allowance — cl 18.2 (all-purpose, $${A.ELEC.toFixed(2)}/week)</span><strong>+ $${R.elecAdd.toFixed(4)}/hr</strong></div>` : "")
++ `<div class="rl rlt"><span>Composite ordinary rate (base for all penalty calculations)</span><strong>$${R.cmp.toFixed(4)}/hr</strong></div>`
++ casLine;
+  el.appendChild(rb);
+
+  /* per-cycle breakdown */
+  const bk = mkEl("div", { class:"cd" });
+  bk.append(mkEl("div",{class:"ch",text:"Per-cycle breakdown"}), mkEl("div",{class:"cs",text:"What makes up each roster cycle (standard allocation)"}));
+
+  const alLabel = R.alMethod === "n/a"
+    ? "Annual leave  (n/a — casual employee)"
+    : R.alMethod === "penalty rates"
+    ? "Annual leave loading  (penalty rates applied — cl 22.3 ✓ greater of test)"
+    : "Annual leave loading  (17.5% on NES ordinary hours — cl 22.3)";
+
+  [["Shift pay  (base + penalty rates + overtime)",           R.stot, true  ],
+   [alLabel,                                                  R.alP,  false ],
+   [(st.emp==="cas" ? "Public holiday entitlement  ("+st.wph+" PHs/yr — n/a)" : "Public holiday entitlement  ("+st.wph+" PHs/yr, incremental 1.5× — cl 21.3)"),  R.phP,  false ],
+   ["Allowances  (leading hand, first aid, tool, underground)", R.alw, false ],
+  ].forEach(([l, v, bd]) => {
+    const row = mkEl("div", { class:"bkr" });
+    const lb  = mkEl("div"); lb.style.cssText = "font-size:12px;color:"+(bd?"var(--color-text-primary)":"var(--color-text-secondary)")+";font-weight:"+(bd?"600":"400")+";"; lb.textContent = l;
+    const vl  = mkEl("div"); vl.style.cssText = "font-size:12px;font-weight:600;font-family:var(--font-mono);color:var(--color-text-primary);flex-shrink:0;margin-left:12px;"; vl.textContent = $a(v);
+    row.append(lb, vl); bk.appendChild(row);
+  });
+  const tot = mkEl("div", { class:"bkt" });
+  tot.innerHTML = `<span class="bktl">Total per cycle</span><span class="bktv">${$a(R.tc)}</span>`;
+  bk.appendChild(tot); el.appendChild(bk);
+
+  renderOneill(R, el);
+
+  /* granular day-by-day table */
+  const tc = mkEl("div", { class:"cd", style:{ padding:"0" } });
+  const thd = mkEl("div", { style:{ padding:"14px 16px 10px", borderBottom:"0.5px solid var(--color-border-tertiary)" } });
+  thd.innerHTML = `<div class="ch">Day-by-day breakdown</div>
+<div class="cs" style="margin-bottom:0">Standard (equal) allocation · ${f2(R.oh)}h ordinary + ${f2(R.oth)}h OT per working shift · rate $${R.cmpEff.toFixed(4)}/hr${st.emp==="cas"?" (incl. 25% casual loading)":""}</div>`;
+  tc.appendChild(thd);
+
+  const COLS = [
+    { key:"ord100", lbl:"Ord 100%", cls:"h", title:"cl 21.1 — weekday day shift ordinary hours" },
+    { key:"ord115", lbl:"Ord 115%", cls:"h", title:"cl 21.2(a) — afternoon/night shift loading" },
+    { key:"ord130", lbl:"Ord 130%", cls:"m", title:"cl 21.2(b) — permanent night shift" },
+    { key:"ord150", lbl:"Ord 150%", cls:"h", title:"cl 21.3 — Saturday, first 3 ordinary hours" },
+    { key:"ord200", lbl:"Ord 200%", cls:"h", title:"cl 21.3 — Saturday (remaining) / Sunday ordinary" },
+    { key:"ot150",  lbl:"OT 150%",  cls:"o", title:"cl 20.1(a) — overtime, first 3 hours" },
+    { key:"ot200",  lbl:"OT 200%",  cls:"o", title:"cl 20.1(b)/20.2 — overtime remainder or continuous shiftworker" },
+  ].filter(c => R.used[c.key]);
+
+  const dtw = mkEl("div", { class:"dtw" });
+  const tbl = mkEl("table", { class:"dt" });
+  const hrow = mkEl("tr");
+  hrow.append(mkEl("th", { class:"l", text:"Day", style:{ minWidth:"78px" } }), mkEl("th", { class:"l", text:"Shift" }));
+  COLS.forEach(c => { const th=mkEl("th",{class:c.cls,title:c.title,text:c.lbl}); hrow.appendChild(th); });
+  hrow.appendChild(mkEl("th", { class:"p", text:"Day pay" }));
+  const thead2 = mkEl("thead"); thead2.appendChild(hrow); tbl.appendChild(thead2);
+
+  const colTots = {}; COLS.forEach(c => colTots[c.key] = 0); let payTot = 0;
+  const tbody = mkEl("tbody");
+  R.rows.forEach((r, i) => {
+    const sat=r.dow===5, sun=r.dow===6, off=r.s==="O";
+    const tr = mkEl("tr", { class: off?"off": (sat||sun)?"we":"" });
+    const td1 = mkEl("td", { class:"l", style:{ display:"flex", alignItems:"center", gap:"5px", padding:"6px 10px" } });
+    const tl  = mkTile(r.s, DOW[r.dow], 24); tl.style.flexShrink = "0";
+    const dl  = mkEl("span", { text:DOW[r.dow]+" "+(i+1), style:{ fontFamily:"var(--font-mono)", fontSize:"10px" } });
+    td1.append(tl, dl);
+    const td2 = mkEl("td", { class:"l" });
+    if ((sat||sun) && !off) { const b2=mkEl("span",{class:"wbd",text:sat?"Sat rates":"Sun rates"}); td2.appendChild(b2); }
+    else td2.textContent = SF[r.s];
+    tr.append(td1, td2);
+    COLS.forEach(c => {
+      const td = mkEl("td"); const v = r[c.key]||0;
+      td.textContent = off?"—": v>0?v.toFixed(2):"—";
+      if (v>0) colTots[c.key] += v;
+      tr.appendChild(td);
+    });
+    const tdp = mkEl("td", { style:{ fontWeight: off?"400":"600" }, text: off?"—":$a(r.pay) });
+    payTot += r.pay; tr.appendChild(tdp); tbody.appendChild(tr);
+  });
+
+  const ft = mkEl("tr", { class:"ft" });
+  const ftlbl = mkEl("td", { class:"l", text:"Cycle totals" }); ftlbl.colSpan = 2; ft.appendChild(ftlbl);
+  COLS.forEach(c => {
+    const td = mkEl("td"); td.style.fontFamily="var(--font-mono)"; td.style.fontWeight="600";
+    td.textContent = colTots[c.key]>0 ? colTots[c.key].toFixed(2) : "—"; ft.appendChild(td);
+  });
+  const ftp = mkEl("td", { class:"hvcol", text:$a(payTot), style:{ fontFamily:"var(--font-mono)", fontWeight:"600", color:"#1d4ed8" } });
+  ft.appendChild(ftp); tbody.appendChild(ft);
+  tbl.appendChild(tbody); dtw.appendChild(tbl); tc.appendChild(dtw); el.appendChild(tc);
+
+  /* notes */
+  const nt = mkEl("div", { class:"nt" });
+  nt.innerHTML = `<div class="nth">Assumptions &amp; limitations</div>
+<ul>
+  <li>Award minimum weekly wages from cl 15 (as varied effective 1 July 2026, FWC Determination PR799292). Ordinary rate = (cl 15 weekly + cl 18.2(b)(i) industry allowance) ÷ 38 ordinary hours.</li>
+  <li>The calculator uses 52 cycles per year (52 × 7 = 364 days). One calendar day per year is excluded compared to a 365-day year.</li>
+  <li>Annual leave loading uses the cl 22.3 greater-of test: the higher of 17.5% on ordinary leave pay or the shift penalty/loading component the employee would have received if working those leave days (excluding overtime).</li>
+  <li>Optimised allocation: ordinary hours assigned to weekday day shifts first, then weekday night/afternoon shifts, then weekend shifts (employer's cl 12.5(d) discretion). Annual leave loading, public holiday entitlement and allowances are identical in both calculations.</li>
+  <li>Continuous shiftworker assessed under O'Neill v Roy Hill Holdings [2015] FWC 2461 (≥34 Sundays, ≥${A.OP} public holidays per year). Manual override available.</li>
+  <li>${st.wph} public holidays per year assumed. Adjust in Step 1 to match your state or territory. Income tax and any over-award payments are not included.</li>
+  <li>Casual employees: 25% casual loading applied to all rates (cl 12.3). No annual leave loading or public holiday entitlement for non-worked days. Overtime provisions apply as for permanent employees.</li>
+  <li>Part-time entitlements calculated pro-rata on contracted ordinary hours. Public holiday entitlement assumes shifts fall on public holidays at the same frequency as full-time employees — actual entitlement depends on rostered days.</li>
+  <li>On-costs: superannuation (12%) calculated on ordinary time earnings (OTE) — shift pay excluding overtime, consistent with SGAA s 6. All-purpose allowances are included in OTE. Payroll tax (5.5%) and workers' compensation (1%) are applied to total Award entitlement as an approximation; actual rates vary by state and payroll threshold.</li>
+  <li>Annualised wage outer limit (cl 17.2) is indicative only — actual outer limit hours in a formal arrangement must be specified in the written agreement and reconciled at least annually.</li>
+  <li>This calculator is for information purposes only. It does not constitute legal advice. Refer to the Mining Industry Award 2020 [MA000011] and the Fair Work Ombudsman for authoritative guidance on your specific circumstances.</li>
+</ul>`;
+  el.appendChild(nt);
+
+  const nav = mkEl("div", { class:"nav" });
+  [{ l:"← Adjust roster",  fn:()=>{st.step=2;render();} },
+   { l:"← Adjust profile", fn:()=>{st.step=1;render();} }].forEach(x => {
+    const b = mkEl("button", { class:"bs no-print", text:x.l }); b.onclick = x.fn; nav.appendChild(b);
+  });
+  const printBtn = mkEl("button", { class:"bs no-print", text:"Print / Export PDF" });
+  printBtn.onclick = () => window.print();
+  nav.appendChild(printBtn);
+  el.appendChild(nav);
+}
+
+/* ── Main render loop ────────────────────────────────────────────────────── */
+function render() {
+  renderPips();
+  ["s1","s2","s3"].forEach((id, i) => document.getElementById(id).style.display = st.step===i+1?"block":"none");
+  if      (st.step === 1) renderS1();
+  else if (st.step === 2) renderS2();
+  else if (st.step === 3) renderS3();
+}
+
+try {
+  render();
+} catch(e) {
+  const errDiv = document.createElement('div');
+  errDiv.style.cssText = 'margin:20px auto;max-width:660px;background:#fee2e2;border:1px solid #ef4444;border-radius:8px;padding:16px;font-family:monospace;font-size:13px;color:#991b1b;white-space:pre-wrap;';
+  errDiv.textContent = 'JavaScript error — please report this:\n\n' + e.message + '\n\n' + (e.stack || '');
+  document.body.appendChild(errDiv);
+  console.error('Render error:', e);
+}
+</script>
+</body>
+</html>
